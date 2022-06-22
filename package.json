@@ -1,10 +1,10 @@
 {
-  "name": "redux-enhancer-react-native-appstate",
-  "version": "0.0.0-managed-by-semantic-release",
-  "description": "Connect your App State changes directly to your Redux store",
+  "name": "redux-enhancer-react-native-netstate",
+  "version": "1.0.0",
+  "description": "Notify net state changes directly to your Redux store",
   "main": "index.js",
-  "repository": "https://github.com/bamlab/redux-enhancer-react-native-appstate.git",
-  "author": "Almouro <contact@almouro.com>",
+  "repository": "https://github.com/lawaziatech/redux-enhancer-react-native-netstate",
+  "author": "Sandeep Jaiswal <thisisjaiswal@gmail.com>",
   "license": "MIT",
   "scripts": {
     "semantic-release": "semantic-release pre && npm publish && semantic-release post",
