@@ -1,36 +1,42 @@
-import { AppState } from 'react-native';
+import NetInfo from "@react-native-community/netinfo";
+const CONNECTED = "CONNECTED";
+const DISCONNECTED = "DISCONNECTED";
 
-export const FOREGROUND = 'APP_STATE.FOREGROUND';
-export const BACKGROUND = 'APP_STATE.BACKGROUND';
-export const INACTIVE = 'APP_STATE.INACTIVE';
+export default () =>
+	(createStore) =>
+	(...args) => {
+		const store = createStore(...args);
 
-export default () => (createStore) => (...args) => {
-  const store = createStore(...args);
+		let currentState = false;
+		const handleNetInfoChange = (isConnected) => {
+			if (currentState !== isConnected) {
+				if (isConnected) {
+					store.dispatch({ type: "CONNECTED" });
+				} else {
+					store.dispatch({ type: "DISCONNECTED" });
+				}
+				currentState = isConnected;
+			}
+		};
+		NetInfo.addEventListener((state) => {
+			handleNetInfoChange(state.isConnected);
+		});
 
-  let currentState = '';
+		// setTimeout to allow redux-saga to catch the initial state fired by redux-enhancer-react-native-netstate library
+		setTimeout(() => handleNetInfoChange(NetInfo.fetch().isConnected));
+		return store;
+	};
 
-  const handleAppStateChange = (nextAppState) => {
-    if (currentState !== nextAppState) {
-      let type;
-      if (nextAppState === 'active') {
-        type = FOREGROUND;
-      } else if (nextAppState === 'background') {
-        type = BACKGROUND;
-      } else if (nextAppState === 'inactive') {
-        type = INACTIVE;
-      }
-      if (type) {
-        store.dispatch({
-          type,
-        });
-      }
-    }
-    currentState = nextAppState;
-  };
-
-  AppState.addEventListener('change', handleAppStateChange);
-  
-  // setTimeout to allow redux-saga to catch the initial state fired by redux-enhancer-react-native-appstate library
-  setTimeout(() => handleAppStateChange(AppState.currentState));
-  return store;
+export const initialState = {
+	isConnected: false,
+};
+export const reducer = (state = initialState, action) => {
+	switch (action.type) {
+		case CONNECTED:
+			return { ...state, isConnected: true };
+		case DISCONNECTED:
+			return { ...state, isConnected: false };
+		default:
+			return state;
+	}
 };
